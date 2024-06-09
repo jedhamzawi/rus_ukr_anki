@@ -1,0 +1,11 @@
+{
+  "apy": {
+    "base_path": "/home/hamsesh/.local/share/Anki2/",
+    "profile_name": "hamsesh",
+    "presets": {
+      "default": { "model": "rus-ukr", "tags": ["rus-ukr", "mission"] }
+    }
+  },
+  "deepl_api": "2e450426-4fa4-425e-bb11-cf5383c5e63e:fx"
+}
+

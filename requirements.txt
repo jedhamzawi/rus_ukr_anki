@@ -1,0 +1,3 @@
+deepl==1.18.0
+ukrainian-word-stress==1.1.0
+genanki==0.13.1

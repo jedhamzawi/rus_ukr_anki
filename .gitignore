@@ -7,3 +7,6 @@ stressed/
 csv/
 anki/
 
+# configuration
+apy.json
+

@@ -1,0 +1,20 @@
+{
+  "base_path": "/home/your_name/.local/share/Anki2/",
+  "profile_name": "MyAnkiProfile",
+  "query": "tag:leech",
+  "presets": {
+    "default": { "model": "Custom", "tags": ["marked"] }
+  },
+  "pngCommands": [
+    ["latex", "-interaction=nonstopmode", "tmp.tex"],
+    ["dvipng", "-D", "150", "-T", "tight", "-bg", "Transparent",
+      "tmp.dvi", "-o", "tmp.png"]
+  ],
+  "svgCommands": [
+    ["lualatex", "-interaction=nonstopmode", "tmp.tex"],
+    ["pdfcrop", "tmp.pdf", "tmp.pdf"],
+    ["pdf2svg", "tmp.pdf", "tmp.svg"]
+  ],
+  "review_show_cards": true
+}
+

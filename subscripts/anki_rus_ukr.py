@@ -1,64 +1,61 @@
 import os
 import csv
-import genanki
+import json
+from apyanki.config import cfg
+from apyanki.anki import Anki
+from apyanki.note import NoteData
 
-out_dir = "anki"
-# random model ID for Anki
-anki_model_id = 2126304982
-anki_deck_id = 1561550783
-anki_model = genanki.Model(
-  anki_model_id,
-  'rus-ukr',
-  fields=[
-    {'name': 'rus'},
-    {'name': 'ukr'},
-  ],
-  templates=[
-    {
-      'name': 'Card 1',
-      'qfmt': '{{rus}}',
-      'afmt': '{{FrontSide}}<hr id="ukr">{{ukr}}',
-    },
-  ])
-
-def make_anki_pkg(file_path) -> str:
-    import argparse
-
-    # create translated subdirectory if it doesn't exist
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-
-    # create the output anki pkg file path
-    filename = os.path.basename(file_path).split(".")[0] + ".apkg"
-    out_path = os.path.join(out_dir, filename)
-
-    anki_deck = genanki.Deck(anki_deck_id, 'rus-ukr')
+def import_csv(csv_path, cfg, anki):
     # open input CSV file
-    with open(file_path, 'r') as input_file:
+    with open(csv_path, 'r') as input_file:
         # create CSV reader
         reader = csv.DictReader(input_file)
         for row in reader:
             rus = row['rus']
             ukr = row['ukr']
-            # create a note out of the rus/ukr values
-            anki_note = genanki.Note(
-                model=anki_model,
-                fields=[rus, ukr])
-            # add it to our deck
-            anki_deck.add_note(anki_note)
-    # package the deck into a file
-    genanki.Package(anki_deck).write_to_file(out_path)
-    # return the out path
-    return out_path
+            fields= {
+                'rus': rus,
+                'ukr': ukr,
+            }
+            # create the note
+            anki_note = NoteData(
+                model='rus-ukr',
+                tags='rus-ukr mission',
+                fields=fields,
+                markdown=False,
+                deck='rus-ukr'
+            )
+            # add the note to the collection
+            anki_note.add_to_collection(anki)
+
+def import_and_sync(csv_path, apy_cfg_file = "apy.json"):
+    # overwrite with our own local cfg if we have one
+    if os.path.exists(apy_cfg_file):
+        with open(apy_cfg_file, encoding="utf8") as f:
+            new_cfg = json.load(f)
+            if not new_cfg['base_path'] is None:
+                cfg['base_path'] = new_cfg['base_path']
+            if not new_cfg['profile_name'] is None:
+                cfg['profile_name'] = new_cfg['profile_name']
+    anki = Anki(**cfg)
+    # import the CSV file to Anki
+    import_csv(csv_path, cfg, anki)
+    # sync to Anki web
+    anki.sync()
 
 
 if __name__ == '__main__':
+    import argparse
     # create the argument parser to parse the file path
     parser = argparse.ArgumentParser(
         prog='anki_rus_ukr.py',
-        description='Converts a CSV of Russian/Ukrainian words to \
-            an Anki deck')
+        description='Imports an Anki pkg to the collection \
+            and then synchronizes')
     # add file path arg
-    parser.add_argument('file_path')
+    parser.add_argument('csv_path')
+    parser.add_argument('-c', '--apy_cfg_file')
     args = parser.parse_args()
-    make_anki_pkg(args.file_path)
+    if not args.apy_cfg_file is None:
+        import_and_sync(args.csv_path, args.apy_cfg_file)
+    else:        
+        import_and_sync(args.csv_path)

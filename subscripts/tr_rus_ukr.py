@@ -1,13 +1,12 @@
 import os
 import deepl
 
-out_dir = "translated"
-auth_key = "<API_KEY>"
-
-def translate(file_path) -> str:
-    translator = deepl.Translator(auth_key)
+def translate(file_path, api_key) -> str:
+    # create the deepL translator
+    translator = deepl.Translator(api_key)
 
     # create translated subdirectory if it doesn't exist
+    out_dir = "translated"
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
@@ -38,5 +37,7 @@ if __name__ == '__main__':
           to Ukrainian using the DeepL API')
     # add file path arg
     parser.add_argument('file_path')
+    parser.add_argument('api_key')
     args = parser.parse_args()
-    translate(args.file_path)
+    translate(args.file_path, args.api_key)
+

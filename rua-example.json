@@ -1,0 +1,11 @@
+{
+  "apy": {
+    "base_path": "/home/your_name/.local/share/Anki2/",
+    "profile_name": "MyAnkiProfile",
+    "presets": {
+      "default": { "model": "Custom", "tags": ["marked"] }
+    },
+  },
+  "deepl_api": "<API_KEY>"
+}
+

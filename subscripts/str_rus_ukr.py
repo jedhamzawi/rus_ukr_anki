@@ -1,12 +1,14 @@
 import os
-from ukrainian_word_stress import Stressifier, OnAmbiguity
+from ukrainian_word_stress import Stressifier, OnAmbiguity, StressSymbol
 
 out_dir = "stressed"
 
 def stress(file_path) -> str:
     # put all stress marks if the word has more than one stress
     # possibility; I can correct it later
-    stressify = Stressifier(on_ambiguity=OnAmbiguity.All)
+    stressify = Stressifier(
+        stress_symbol=StressSymbol.CombiningAcuteAccent,
+        on_ambiguity=OnAmbiguity.All)
 
     # create stressed subdirectory if it doesn't exist
     if not os.path.exists(out_dir):

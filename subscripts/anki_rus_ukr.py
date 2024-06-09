@@ -28,7 +28,7 @@ def import_csv(csv_path, cfg, anki):
             # add the note to the collection
             anki_note.add_to_collection(anki)
 
-def import_and_sync(csv_path, apy_cfg_file = "apy.json"):
+def import_and_sync(csv_path, apy_cfg_file="apy.json", no_sync=False):
     # overwrite with our own local cfg if we have one
     if os.path.exists(apy_cfg_file):
         with open(apy_cfg_file, encoding="utf8") as f:
@@ -40,22 +40,28 @@ def import_and_sync(csv_path, apy_cfg_file = "apy.json"):
     anki = Anki(**cfg)
     # import the CSV file to Anki
     import_csv(csv_path, cfg, anki)
-    # sync to Anki web
-    anki.sync()
+    # sync to Anki web if we're set to
+    if not no_sync:
+        anki.sync()
 
 
 if __name__ == '__main__':
     import argparse
-    # create the argument parser to parse the file path
+    # create the argument parser and parse args
     parser = argparse.ArgumentParser(
         prog='anki_rus_ukr.py',
         description='Imports an Anki pkg to the collection \
             and then synchronizes')
-    # add file path arg
     parser.add_argument('csv_path')
     parser.add_argument('-c', '--apy_cfg_file')
+    parser.add_argument('-n', '--no-sync', action='store_true')
     args = parser.parse_args()
-    if not args.apy_cfg_file is None:
+    if args.apy_cfg_file is not None and args.no_sync is not None:
+        import_and_sync(args.csv_path, args.apy_cfg_file, args.no_sync)
+    elif args.apy_cfg_file is not None:
         import_and_sync(args.csv_path, args.apy_cfg_file)
-    else:        
+    elif args.no_sync is not None:
+        import_and_sync(args.csv_path, no_sync=args.no_sync)
+    else:
         import_and_sync(args.csv_path)
+
